@@ -1,0 +1,49 @@
+.create external table Products (ProductID: int, ProductNumber: string,  Name: string) 
+kind=sql
+table=[SalesLT.Product]
+( 
+   h@'Server=tcp:fabric-sql-denisa.database.windows.net,1433;Initial Catalog=fabric-sql-aworks;User Id=SqlAdmin;Password=ChangeYourAdminPassword1'
+)
+with 
+(
+   createifnotexists = true
+)  
+ 
+
+// ===================OPERATIONAL
+clicks
+| count
+
+clicks
+| summarize TotalEvents = count(), StartDate = min(['date']), EndDate = max(['date'])
+| extend Freshness = now() - EndDate
+
+// ===================AGGREGATIONS
+
+clicks
+| summarize product_count= count() by productId
+| render columnchart 
+| top 30 by product_count
+
+clicks
+| summarize product_count = count() by productId
+| render  piechart 
+| top 30 by product_count
+
+
+clicks
+| summarize date_count = count() by bin(['date'], 1d)
+| render timechart 
+| top 30 by date_count
+
+print ip_location=geo_info_from_ip_address('20.53.203.50')
+
+clicks
+| take 1000
+| project lon = geo_info_from_ip_address(ip_address).longitude, lat = geo_info_from_ip_address(ip_address).latitude, productId
+| render scatterchart with (kind = map)
+
+
+
+
+

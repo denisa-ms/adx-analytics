@@ -1,0 +1,6 @@
+pandas
+python-dotenv
+azure-identity==1.14.0
+azure.storage.blob
+azure.eventhub
+faker
