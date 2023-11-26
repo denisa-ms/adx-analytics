@@ -45,5 +45,48 @@ clicks
 
 
 
+let products = external_table('Products');
+clicks
+| join products on $left.productId == $right.ProductID
+
+let products = external_table('Products');
+clicks
+| join products on $left.productId == $right.ProductID
+| summarize product_count = count() by Name
+| render  piechart 
 
 
+let products = external_table('Products');
+clicks
+| join products on $left.productId == $right.ProductID
+| summarize product_count= count() by Name
+| render columnchart 
+
+
+let products = external_table('Products');
+clicks
+| join products on $left.productId == $right.ProductID
+| project lon = geo_info_from_ip_address(ip_address).longitude, lat = geo_info_from_ip_address(ip_address).latitude, Name
+| render scatterchart with (kind = map)
+
+let products = external_table('Products');
+impressions
+| join products on $left.productId == $right.ProductID
+| summarize product_count= count() by Name
+| render columnchart 
+
+
+// ctr
+let imp = 
+impressions
+| extend dateOnly = substring(todatetime(['date']).tostring(), 0, 10)
+| summarize imp_count = count() by dateOnly;
+let clck = 
+clicks
+| extend dateOnly = substring(todatetime(['date']).tostring(), 0, 10)
+| summarize clck_count = count() by dateOnly;
+imp 
+| join clck on $left.dateOnly == $right.dateOnly
+| extend ctr = clck_count * 100 / imp_count
+| top 50 by ctr
+| render columnchart  by dateOnly
