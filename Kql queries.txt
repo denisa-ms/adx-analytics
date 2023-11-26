@@ -90,3 +90,25 @@ imp
 | extend ctr = clck_count * 100 / imp_count
 | top 50 by ctr
 | render columnchart  by dateOnly
+
+
+// ctr overall
+let imp = 
+impressions
+| extend dateOnly = substring(todatetime(['date']).tostring(), 0, 10)
+| summarize imp_count = count() by dateOnly;
+let clck = 
+clicks
+| extend dateOnly = substring(todatetime(['date']).tostring(), 0, 10)
+| summarize clck_count = count() by dateOnly;
+imp 
+| join clck on $left.dateOnly == $right.dateOnly
+| extend ctr = clck_count * 100 / imp_count
+| summarize CTR = avg(ctr)
+| render table 
+
+
+clicks
+| make-series count() on ['date'] step 1d by browser, version
+| extend anomalies = series_decompose_anomalies(count_, 4)
+| render anomalychart with (anomalycolumns=anomalies)   
