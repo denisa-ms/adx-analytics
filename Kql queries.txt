@@ -9,6 +9,24 @@ with
    createifnotexists = true
 )  
  
+// silver layer creation
+.create table [silverClicks] (impressionId:guid,['date']:datetime,productId:int,browser:string,version:real,device:string,source:string,ip_address:string, lat: dynamic, lon: dynamic)
+
+
+.create function
+with (docstring = 'Ingest raw clicks and calculate geo location', folder='ingestprojection')
+ParseClicks ()
+{
+clicks
+| extend lon = geo_info_from_ip_address(ip_address).longitude, lat = geo_info_from_ip_address(ip_address).latitude
+}
+ 
+.alter table
+silverClicks
+policy update @'[{"Source": "clicks", "Query": "ParseClicks", "IsEnabled" : true, "IsTransactional": true }]'
+
+
+
 
 // ===================OPERATIONAL
 clicks
