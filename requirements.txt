@@ -5,3 +5,6 @@ azure-storage-blob
 azure-eventhub
 azure-kusto-data
 faker
+pyodbc
+scipy
+numpy

@@ -1,3 +1,4 @@
+// connect to operational Database with external table Product
 .create external table Products (ProductID: int, ProductNumber: string,  Name: string) 
 kind=sql
 table=[SalesLT.Product]
@@ -9,7 +10,20 @@ with
    createifnotexists = true
 )  
  
-// silver layer creation
+// connect to operational Database with external table Orders
+.create external table Orders (SalesOrderID: int, SalesOrderDetailID:int, OrderQty: int,  ProductID: int,  LineTotal: decimal, ModifiedDate: datetime) 
+kind=sql
+table=[SalesLT.SalesOrderDetail]
+( 
+   h@'Server=tcp:fabric-sql-denisa.database.windows.net,1433;Initial Catalog=fabric-sql-aworks;User Id=SqlAdmin;Password=ChangeYourAdminPassword1'
+)
+with 
+(
+   createifnotexists = true
+)    
+
+
+// create a table that will be calculated in the streaming of the events 
 .create table [silverClicks] (impressionId:guid,['date']:datetime,productId:int,browser:string,version:real,device:string,source:string,ip_address:string, lat: dynamic, lon: dynamic)
 
 
@@ -17,46 +31,46 @@ with
 with (docstring = 'Ingest raw clicks and calculate geo location', folder='ingestprojection')
 ParseClicks ()
 {
-clicks
+Clicks
 | extend lon = geo_info_from_ip_address(ip_address).longitude, lat = geo_info_from_ip_address(ip_address).latitude
 }
  
 .alter table
 silverClicks
-policy update @'[{"Source": "clicks", "Query": "ParseClicks", "IsEnabled" : true, "IsTransactional": true }]'
+policy update @'[{"Source": "Clicks", "Query": "ParseClicks", "IsEnabled" : true, "IsTransactional": true }]'
 
 
 
 
 // ===================OPERATIONAL
-clicks
+Clicks
 | count
 
-clicks
+Clicks
 | summarize TotalEvents = count(), StartDate = min(['date']), EndDate = max(['date'])
 | extend Freshness = now() - EndDate
 
 // ===================AGGREGATIONS
 
-clicks
+Clicks
 | summarize product_count= count() by productId
 | render columnchart 
 | top 30 by product_count
 
-clicks
+Clicks
 | summarize product_count = count() by productId
 | render  piechart 
 | top 30 by product_count
 
 
-clicks
+Clicks
 | summarize date_count = count() by bin(['date'], 1d)
 | render timechart 
 | top 30 by date_count
 
 print ip_location=geo_info_from_ip_address('20.53.203.50')
 
-clicks
+Clicks
 | take 1000
 | project lon = geo_info_from_ip_address(ip_address).longitude, lat = geo_info_from_ip_address(ip_address).latitude, productId
 | render scatterchart with (kind = map)
@@ -64,31 +78,31 @@ clicks
 
 
 let products = external_table('Products');
-clicks
+Clicks
 | join products on $left.productId == $right.ProductID
 
 let products = external_table('Products');
-clicks
+Clicks
 | join products on $left.productId == $right.ProductID
 | summarize product_count = count() by Name
 | render  piechart 
 
 
 let products = external_table('Products');
-clicks
+Clicks
 | join products on $left.productId == $right.ProductID
 | summarize product_count= count() by Name
 | render columnchart 
 
 
 let products = external_table('Products');
-clicks
+Clicks
 | join products on $left.productId == $right.ProductID
 | project lon = geo_info_from_ip_address(ip_address).longitude, lat = geo_info_from_ip_address(ip_address).latitude, Name
 | render scatterchart with (kind = map)
 
 let products = external_table('Products');
-impressions
+Impressions
 | join products on $left.productId == $right.ProductID
 | summarize product_count= count() by Name
 | render columnchart 
@@ -96,11 +110,11 @@ impressions
 
 // ctr
 let imp = 
-impressions
+Impressions
 | extend dateOnly = substring(todatetime(['date']).tostring(), 0, 10)
 | summarize imp_count = count() by dateOnly;
 let clck = 
-clicks
+Clicks
 | extend dateOnly = substring(todatetime(['date']).tostring(), 0, 10)
 | summarize clck_count = count() by dateOnly;
 imp 
@@ -112,11 +126,11 @@ imp
 
 // ctr overall
 let imp = 
-impressions
+Impressions
 | extend dateOnly = substring(todatetime(['date']).tostring(), 0, 10)
 | summarize imp_count = count() by dateOnly;
 let clck = 
-clicks
+Clicks
 | extend dateOnly = substring(todatetime(['date']).tostring(), 0, 10)
 | summarize clck_count = count() by dateOnly;
 imp 
@@ -126,7 +140,21 @@ imp
 | render table 
 
 
-clicks
+Clicks
 | make-series count() on ['date'] step 1d by browser, version
 | extend anomalies = series_decompose_anomalies(count_, 4)
 | render anomalychart with (anomalycolumns=anomalies)   
+
+
+//--------------   Recommendations -------------------
+// find all orders where the product appears
+external_table("Orders")
+| summarize ordersWhereFound = make_list(SalesOrderID) by ProductID
+
+
+//after loading the recommendations into ADX
+//get top 5 recommmended per product
+ProductRecommendations
+| where  ProductID1 == 707 and jaccard_similarity > 0.5
+| order by jaccard_similarity desc 
+| take 5
