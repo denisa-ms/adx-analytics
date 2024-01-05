@@ -42,7 +42,6 @@ impressions
 | render scatterchart with (kind = map)
 
 
-
 clicks
 | join external_table('products') on $left.productId == $right.ProductID
 
