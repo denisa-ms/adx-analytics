@@ -39,6 +39,9 @@ Clicks
 silverClicks
 policy update @'[{"Source": "Clicks", "Query": "ParseClicks", "IsEnabled" : true, "IsTransactional": true }]'
 
+//create table and ingestion mapping for Impressions to Orders
+.create table [impressionsToOrders2] (impressionId:guid,SalesOrderID:long,SalesOrderDetailID:long)
+.create table impressionsToOrders2 ingestion json mapping 'impressionsToOrders_jsonmapping' '[{"column":"impressionId", "Properties":{"Path":"$[\'impressionId\']"}},{"column":"SalesOrderID", "Properties":{"Path":"$[\'SalesOrderID\']"}},{"column":"SalesOrderDetailID", "Properties":{"Path":"$[\'SalesOrderDetailID\']"}}]'
 
 
 

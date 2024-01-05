@@ -4,6 +4,7 @@ azure-identity==1.14.0
 azure-storage-blob
 azure-eventhub
 azure-kusto-data
+azure-kusto-ingest
 faker
 pyodbc
 scipy

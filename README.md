@@ -1,5 +1,43 @@
-# ADX - Real time analytics workshop
+# ADX - Building an Analytics platform - workshop
 Created by: [Denise Schlesinger](https://www.linkedin.com/in/deniseschlesinger/)
 
-# Jaccard Similarity
+# Introduction
+Suppose you own an e-commerce website selling bike accessories. You have millions of visitors a month, you want to analyze the website traffic, consumer patterns and predict sales.
+This workshop will walk you through the process of building an end-to-end Data Analytics Solution for this E-commerce website.
+You will learn how to:
+* Build a star schema in Azure Data Explorer
+* Build Data pipelines using Azure Data Factory for CDC (change data capture)
+* Stream events into Azure Event hubs and ingest them into Azure Data Explorer
+* Create data transformations in Azure Data Explorer 
+* Use Notebooks to create product recommendations
+* Create reports & Visualize the data using Power BI
+* Create reports and Alerts connecting Grafana to Azure Data Explorer
+
+# Architecture
+![Architectural Diagram](./images/architecture.png)
+
+# Pre-requisites
+* An Azure Account where you have admin permissions
+* Python 3.7 running locally in your machine
+
+# Building the infrastructure
+
+# Run the CDC pipelines
+
+# Ingest events into Azure Data Explorer
+
+# Data visualization using Power BI
+
+# Connect Azure Data Explorer to Grafana
+
+# Create Product Recommendations
+
+## Jaccard Similarity
 https://www.geeksforgeeks.org/how-to-calculate-jaccard-similarity-in-python/
+
+## Add AAD app to ADX as admin + run the following command inside ADX
+
+.add database ['your db name'] users ('aadapp=your app-id') 'Demo app put your comment here (AAD)'
+
+# Add AAD user from another tenant to access from PBI to ADX
+.add database ['your db name'] admins ("aaduser=user@microsoft.com;aad tenant id")
