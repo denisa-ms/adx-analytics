@@ -1,14 +1,4 @@
-// connect to operational Database with external table Product
-.create external table Products (ProductID: int, ProductNumber: string,  Name: string) 
-kind=sql
-table=[SalesLT.Product]
-( 
-   h@'Server=tcp:fabric-sql-denisa.database.windows.net,1433;Initial Catalog=fabric-sql-aworks;User Id=SqlAdmin;Password=ChangeYourAdminPassword1'
-)
-with 
-(
-   createifnotexists = true
-)  
+
  
 // connect to operational Database with external table Orders
 .create external table Orders (SalesOrderID: int, SalesOrderDetailID:int, OrderQty: int,  ProductID: int,  LineTotal: decimal, ModifiedDate: datetime) 
@@ -46,6 +36,20 @@ policy update @'[{"Source": "Clicks", "Query": "ParseClicks", "IsEnabled" : true
 
 
 // ===================OPERATIONAL
+
+
+
+//aggregations for the gold layer
+
+silverOrdersLatest
+| join kind=inner silverProductsLatest on $left.ProductID == $right.ProductID
+| summarize DailySales = sum(LineTotal) by PurchaseDate, ProductID, Name
+
+
+silverClicks
+| join kind=inner silverProductsLatest on $left.ProductID == $right.ProductID
+| summarize DailyClicks = count() by 'date', ProductID, browser, browserVersion, device, source
+
 Clicks
 | count
 

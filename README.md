@@ -20,17 +20,17 @@ You will learn how to:
 * An Azure Account where you have admin permissions
 * Python 3.7 running locally in your machine
 
-# Building the infrastructure
+# 1- Building the infrastructure
 
-# Run the CDC pipelines
+# 2- Run the CDC pipelines
 
-# Ingest events into Azure Data Explorer
+# 3- Ingest events into Azure Data Explorer
 
-# Data visualization using Power BI
+# 4- Data visualization using Power BI
 
-# Connect Azure Data Explorer to Grafana
+# 5- Connect Azure Data Explorer to Grafana
 
-# Create Product Recommendations
+# 6- Create Product Recommendations
 
 ## Jaccard Similarity
 https://www.geeksforgeeks.org/how-to-calculate-jaccard-similarity-in-python/

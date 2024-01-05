@@ -1,0 +1,121 @@
+// ===================OPERATIONAL queries for Data Analysis
+
+ordersLatest
+| join kind=inner external_table('products') on $left.ProductID == $right.ProductID
+| summarize DailySales = sum(LineTotal) by PurchaseDate, ProductID, Name
+
+
+clicks
+| join kind=inner external_table('products') on $left.productId == $right.ProductID
+| summarize DailyClicks = count() by clickDate, ProductID
+
+clicks
+| count
+
+clicks
+| summarize TotalEvents = count(), StartDate = min(clickDate), EndDate = max(clickDate)
+| extend Freshness = now() - EndDate
+
+// ===================AGGREGATIONS
+
+clicks
+| summarize product_count= count() by productId
+| render columnchart 
+| top 30 by product_count
+
+clicks
+| summarize product_count = count() by productId
+| render  piechart 
+| top 30 by product_count
+
+
+clicks
+| summarize date_count = count() by bin(clickDate, 1d)
+| render timechart 
+| top 30 by date_count
+
+print ip_location=geo_info_from_ip_address('20.53.203.50')
+
+impressions
+| take 1000
+| project lon = geo_info_from_ip_address(ip_address).longitude, lat = geo_info_from_ip_address(ip_address).latitude, productId
+| render scatterchart with (kind = map)
+
+
+
+clicks
+| join external_table('products') on $left.productId == $right.ProductID
+
+clicks
+| join external_table('products') on $left.productId == $right.ProductID
+| summarize product_count = count() by Name
+| render  piechart 
+
+
+clicks
+| join external_table('products') on $left.productId == $right.ProductID
+| summarize product_count= count() by Name
+| render columnchart 
+
+
+impressions
+| join external_table('products') on $left.productId == $right.ProductID
+| project lon = geo_info_from_ip_address(ip_address).longitude, lat = geo_info_from_ip_address(ip_address).latitude, Name
+| render scatterchart with (kind = map)
+
+impressions
+| join external_table('products') on $left.productId == $right.ProductID
+| summarize product_count= count() by Name
+| render columnchart 
+
+
+// ctr
+let imp = 
+impressions
+| extend dateOnly = substring(todatetime(impressionDate).tostring(), 0, 10)
+| summarize imp_count = count() by dateOnly;
+let clck = 
+clicks
+| extend dateOnly = substring(todatetime(clickDate).tostring(), 0, 10)
+| summarize clck_count = count() by dateOnly;
+imp 
+| join clck on $left.dateOnly == $right.dateOnly
+| extend ctr = clck_count * 100 / imp_count
+| top 50 by ctr
+| render columnchart  by dateOnly
+
+
+// ctr overall
+let imp = 
+impressions
+| extend dateOnly = substring(todatetime(impressionDate).tostring(), 0, 10)
+| summarize imp_count = count() by dateOnly;
+let clck = 
+clicks
+| extend dateOnly = substring(todatetime(clickDate).tostring(), 0, 10)
+| summarize clck_count = count() by dateOnly;
+imp 
+| join clck on $left.dateOnly == $right.dateOnly
+| extend ctr = clck_count * 100 / imp_count
+| summarize CTR = avg(ctr)
+| render table 
+
+
+impressions
+| make-series count() on impressionDate step 1d by browser, browserVersion
+| extend anomalies = series_decompose_anomalies(count_, 4)
+| render anomalychart with (anomalycolumns=anomalies)   
+
+
+//--------------   Recommendations -------------------
+// find all orders where the product appears
+orders
+| summarize ordersWhereFound = make_list(SalesOrderID) by ProductID
+
+
+//after loading the recommendations into ADX
+//get top 5 recommmended per product
+productRecommendations
+| where  productId1 == 707 and jaccard_similarity > 0.5
+| order by jaccard_similarity desc 
+| take 5
