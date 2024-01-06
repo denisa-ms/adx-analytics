@@ -4,7 +4,7 @@
     "parameters": {
         "factoryName": {
             "type": "string",
-            "defaultValue": "adx-analyticsworkshop-adf"
+            "defaultValue": "adxanalytics-adf"
         },
         "sqlLinkedService": { 
             "type": "string",

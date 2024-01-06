@@ -1,18 +1,21 @@
-param serverName string = 'adx-analyticsworkshop-dbserver'
+param serverName string = 'adxanalytics-dbserver'
 param databaseName string = 'aworks'
 param location string = 'westeurope'
 param adminLogin string = 'SqlAdmin'
 param adminPassword string = 'ChangeYourAdminPassword1'
-param dataFactoryName string = 'adx-analyticsworkshop-adf'
-param kustoClusterName string = 'adxanalyticsworkshopkusto'
+param dataFactoryName string = 'adxanalytics-adf'
+param kustoClusterName string = 'adxanalyticskusto'
 param kustoDatabaseName string = 'storeDB'
 param kustoClusterUri string = 'https://${kustoClusterName}.westeurope.kusto.windows.net'
 param kustoScriptName string = 'db-script'
 param skuName string = 'Dev(No SLA)_Standard_D11_v2'
 param skuCapacity int = 1
-param eventHubNamespaceName string = 'adx-analyticsworkshop-ehub-ns'
-param eventHubName string = 'clicks-stream'
-param ehubConsumerGroup string = 'kustoConsumerGroup'
+param eventHubNamespaceName string = 'adxanalytics-ehub-ns'
+param eventHubImpressions string = 'impressions'
+param eventHubClicks string = 'clicks'
+param ehubConsumerGroup1 string = 'kustoConsumerGroup1'
+param ehubConsumerGroup2 string = 'kustoConsumerGroup2'
+
 
 resource sqlServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
   name: serverName
@@ -39,6 +42,12 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
   name: databaseName
   parent: sqlServer
   location: location
+  sku: {
+    name: 'GP_S_Gen5'
+    tier: 'GeneralPurpose'
+    family: 'Gen5'
+    capacity: 2
+  }
   properties: {
     collation: 'SQL_Latin1_General_CP1_CI_AS'
     sampleName: 'AdventureWorksLT'
@@ -64,8 +73,8 @@ resource eventHubNamespace 'Microsoft.EventHub/namespaces@2021-11-01' = {
   properties: {}
 }
 
-resource eventHub 'Microsoft.EventHub/namespaces/eventhubs@2021-11-01' = {
-  name: eventHubName
+resource eventHub1 'Microsoft.EventHub/namespaces/eventhubs@2021-11-01' = {
+  name: eventHubImpressions
   parent: eventHubNamespace
   properties: {
     messageRetentionInDays: 1
@@ -73,12 +82,22 @@ resource eventHub 'Microsoft.EventHub/namespaces/eventhubs@2021-11-01' = {
   }
 }
 
+resource eventHub2 'Microsoft.EventHub/namespaces/eventhubs@2021-11-01' = {
+  name: eventHubClicks
+  parent: eventHubNamespace
+  properties: {
+    messageRetentionInDays: 1
+    partitionCount: 1
+  }
+}
+
+
 resource kustoCluster 'Microsoft.Kusto/clusters@2022-02-01' = {
   name: kustoClusterName
   location: location
   sku: {
     name: skuName
-    tier: 'Dev(No SLA)_Standard_D11_v2'
+    tier: 'basic'
     capacity: skuCapacity
   }
   identity: {
@@ -108,12 +127,17 @@ resource kustoScript 'Microsoft.Kusto/clusters/databases/scripts@2022-02-01' = {
 //  Role list:  https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles
 var dataReceiverId = 'a638d3c7-ab3a-418d-83e6-5f17a39d4fde'
 var fullDataReceiverId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', dataReceiverId)
-var eventHubRoleAssignmentName = '${resourceGroup().id}${kustoClusterName}${dataReceiverId}${eventHubName}'
-var roleAssignmentName = guid(eventHubRoleAssignmentName, eventHubName, dataReceiverId, kustoClusterName)
 
-resource clusterEventHubAuthorization 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: roleAssignmentName
-  scope: eventHub
+var eventHubRoleAssignmentNameImpressions = '${resourceGroup().id}${kustoClusterName}${dataReceiverId}${eventHubImpressions}'
+var roleAssignmentNameImpressions = guid(eventHubRoleAssignmentNameImpressions, eventHubImpressions, dataReceiverId, kustoClusterName)
+
+var eventHubRoleAssignmentNameClicks = '${resourceGroup().id}${kustoClusterName}${dataReceiverId}${eventHubClicks}'
+var roleAssignmentNameClicks = guid(eventHubRoleAssignmentNameClicks, eventHubClicks, dataReceiverId, kustoClusterName)
+
+
+resource clusterEventHubAuthorization1 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: roleAssignmentNameImpressions
+  scope: eventHub1
   properties: {
     description: 'Give "Azure Event Hubs Data Receiver" to the kustoCluster'
     principalId: kustoCluster.identity.principalId
@@ -123,10 +147,25 @@ resource clusterEventHubAuthorization 'Microsoft.Authorization/roleAssignments@2
   }
   dependsOn: [
     kustoCluster
-    eventHub
+    eventHub1
   ]
 }
 
+resource clusterEventHubAuthorization2 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: roleAssignmentNameClicks
+  scope: eventHub2
+  properties: {
+    description: 'Give "Azure Event Hubs Data Receiver" to the kustoCluster'
+    principalId: kustoCluster.identity.principalId
+    //  Required in case principal not ready when deploying the assignment
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: fullDataReceiverId
+  }
+  dependsOn: [
+    kustoCluster
+    eventHub2
+  ]
+}
 resource sqlServerLinkedService 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
   name: 'SqlServerLinkedService'
   parent: dataFactory
@@ -158,9 +197,15 @@ resource kustoClusterLinkedService 'Microsoft.DataFactory/factories/linkedservic
 }
 
 
-resource kustoConsumerGroup 'Microsoft.EventHub/namespaces/eventhubs/consumergroups@2021-11-01' = {
-  name: ehubConsumerGroup
-  parent: eventHub
+resource kustoConsumerGroup1 'Microsoft.EventHub/namespaces/eventhubs/consumergroups@2021-11-01' = {
+  name: ehubConsumerGroup1
+  parent: eventHub1
+  properties: {}
+}
+
+resource kustoConsumerGroup2 'Microsoft.EventHub/namespaces/eventhubs/consumergroups@2021-11-01' = {
+  name: ehubConsumerGroup2
+  parent: eventHub2
   properties: {}
 }
 
@@ -170,21 +215,45 @@ resource eventConnection 'Microsoft.Kusto/clusters/databases/dataConnections@202
   location: location
   dependsOn: [
     //  We need the table to be present in the database
-    eventHub
+    eventHub1
     kustoScript
   ]
   kind: 'EventHub'
   properties: {
     compression: 'None'
-    consumerGroup: kustoConsumerGroup.name
+    consumerGroup: kustoConsumerGroup1.name
     dataFormat: 'JSON'
-    eventHubResourceId: eventHub.id
+    eventHubResourceId: eventHub1.id
     eventSystemProperties: [
       'x-opt-enqueued-time'
     ]
     managedIdentityResourceId: kustoCluster.id
-    mappingRuleName: 'bronzeClicks_mapping'
-    tableName: 'bronzeClicks'
+    mappingRuleName: 'impressions_jsonmapping'
+    tableName: 'impressions'
+  }
+}
+
+resource eventConnection2 'Microsoft.Kusto/clusters/databases/dataConnections@2022-12-29' = {
+  name: 'eventConnection2'
+  parent: kustoDatabase
+  location: location
+  dependsOn: [
+    //  We need the table to be present in the database
+    eventHub2
+    kustoScript
+  ]
+  kind: 'EventHub'
+  properties: {
+    compression: 'None'
+    consumerGroup: kustoConsumerGroup2.name
+    dataFormat: 'JSON'
+    eventHubResourceId: eventHub2.id
+    eventSystemProperties: [
+      'x-opt-enqueued-time'
+    ]
+    managedIdentityResourceId: kustoCluster.id
+    mappingRuleName: 'clicks_jsonmapping'
+    tableName: 'clicks'
   }
 }
 
@@ -201,4 +270,3 @@ resource symbolicname 'Microsoft.Kusto/clusters/principalAssignments@2022-02-01'
     tenantId: subscription().tenantId
   }
 }
-

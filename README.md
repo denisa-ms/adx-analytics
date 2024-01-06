@@ -21,6 +21,17 @@ You will learn how to:
 * Python 3.7 running locally in your machine
 
 # 1- Building the infrastructure
+## Run scripts to build all the Infrastructure
+* Azure Data Explorer
+* Azure Data Factory
+* SQL server 
+* "Adventure works" sample DB
+* Azure Event hub 
+
+## Manually create Azure Managed Grafana
+Follow these instructions to provision Grafana
+TBD
+
 
 # 2- Run the CDC pipelines
 
