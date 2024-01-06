@@ -22,14 +22,22 @@ You will learn how to:
 
 # 1- Building the infrastructure
 ## Run scripts to build all the Infrastructure
+Modify userId in the grafana bicep 
+Run powershell
 * Azure Data Explorer
 * Azure Data Factory
 * SQL server 
 * "Adventure works" sample DB
 * Azure Event hub 
 
-## Manually create Azure Managed Grafana
-Follow these instructions to provision Grafana
+## Manually configure app registration to connect to Azure Data Explorer
+https://learn.microsoft.com/en-us/azure/data-explorer/provision-entra-id-app
+
+TBD
+Add event hub connection string
+Add ADX dashboards
+Add powerbi dashboards
+Add grafana dashboards
 TBD
 
 
