@@ -63,7 +63,7 @@ policy update @'[{"Source": "bronzeOrders", "Query": "ParseOrders", "IsEnabled" 
 .create materialized-view ordersLatest on table orders
 {
     orders
-    | summarize arg_max(ModifiedDate, *) by SalesOrderID
+    | summarize arg_max(ModifiedDate, *) by SalesOrderDetailID
 }
 
 
