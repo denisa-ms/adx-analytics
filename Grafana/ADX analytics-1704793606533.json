@@ -13,8 +13,8 @@
   "__requires": [
     {
       "type": "panel",
-      "id": "gauge",
-      "name": "Gauge",
+      "id": "barchart",
+      "name": "Bar chart",
       "version": ""
     },
     {
@@ -28,6 +28,12 @@
       "id": "grafana-azure-data-explorer-datasource",
       "name": "Azure Data Explorer Datasource",
       "version": "4.7.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
     },
     {
       "type": "panel",
@@ -88,22 +94,24 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 4,
         "x": 0,
         "y": 0
       },
-      "id": 3,
+      "id": 5,
       "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "sum"
           ],
           "fields": "",
           "values": false
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "textMode": "auto"
       },
       "pluginVersion": "9.5.13",
       "targets": [
@@ -136,7 +144,7 @@
             }
           },
           "pluginVersion": "4.7.0",
-          "query": "let imp = \nimpressions\n| where $__timeFilter(impressionDate)\n| extend dateOnly = substring(todatetime(impressionDate).tostring(), 0, 10)\n| summarize imp_count = count() by dateOnly;\nlet clck = \nclicks\n| where $__timeFilter(clickDate)\n| extend dateOnly = substring(todatetime(clickDate).tostring(), 0, 10)\n| summarize clck_count = count() by dateOnly;\nimp \n| join clck on $left.dateOnly == $right.dateOnly\n| project selected_date = dateOnly , impressions = imp_count , clicks = clck_count, CTR = clck_count * 100 / imp_count",
+          "query": "impressions\n| where $__timeFilter(impressionDate)\n| summarize imp_count = count()",
           "querySource": "raw",
           "queryType": "KQL",
           "rawMode": true,
@@ -144,8 +152,188 @@
           "resultFormat": "table"
         }
       ],
-      "title": "Panel Title",
-      "type": "gauge"
+      "title": "Impressions",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "${DS_AZURE_DATA EXPLORER DATASOURCE}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.13",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "storeDB",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "${DS_AZURE_DATA EXPLORER DATASOURCE}"
+          },
+          "expression": {
+            "from": {
+              "property": {
+                "name": "bronzeOrders",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "4.7.0",
+          "query": "clicks\n| where $__timeFilter(clickDate)\n| summarize click_count = count()",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Clicks",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "${DS_AZURE_DATA EXPLORER DATASOURCE}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 8,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.13",
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "storeDB",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "${DS_AZURE_DATA EXPLORER DATASOURCE}"
+          },
+          "expression": {
+            "from": {
+              "property": {
+                "name": "bronzeOrders",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "4.7.0",
+          "query": "let imp = \nimpressions\n| where $__timeFilter(impressionDate)\n| extend dateOnly = substring(todatetime(impressionDate).tostring(), 0, 10)\n| summarize imp_count = count() by dateOnly;\nlet clck = \nclicks\n| where $__timeFilter(clickDate)\n| extend dateOnly = substring(todatetime(clickDate).tostring(), 0, 10)\n| summarize clck_count = count() by dateOnly;\nimp \n| join clck on $left.dateOnly == $right.dateOnly\n| project CTR = clck_count * 100 / imp_count",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "CTR",
+      "type": "stat"
     },
     {
       "datasource": {
@@ -272,33 +460,23 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
+            "fillOpacity": 80,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "linear",
             "lineWidth": 1,
-            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -327,19 +505,29 @@
         "x": 0,
         "y": 8
       },
-      "id": 4,
+      "id": 3,
       "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
         "legend": {
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
         "tooltip": {
           "mode": "single",
           "sort": "none"
-        }
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
       },
+      "pluginVersion": "9.5.13",
       "targets": [
         {
           "OpenAI": false,
@@ -370,7 +558,7 @@
             }
           },
           "pluginVersion": "4.7.0",
-          "query": "impressions\n| where $__timeFilter(impressionDate)\n| summarize load_time_max = max(page_loading_seconds) by bin(impressionDate, 1d)",
+          "query": "let imp = \nimpressions\n| where $__timeFilter(impressionDate)\n| extend dateOnly = substring(todatetime(impressionDate).tostring(), 0, 10)\n| summarize imp_count = count() by dateOnly;\nlet clck = \nclicks\n| where $__timeFilter(clickDate)\n| extend dateOnly = substring(todatetime(clickDate).tostring(), 0, 10)\n| summarize clck_count = count() by dateOnly;\nimp \n| join clck on $left.dateOnly == $right.dateOnly\n| project selected_date = dateOnly , impressions = imp_count , clicks = clck_count, CTR = clck_count * 100 / imp_count",
           "querySource": "raw",
           "queryType": "KQL",
           "rawMode": true,
@@ -378,8 +566,8 @@
           "resultFormat": "table"
         }
       ],
-      "title": "Page Max load time",
-      "type": "timeseries"
+      "title": "Overview",
+      "type": "barchart"
     },
     {
       "datasource": {
@@ -497,9 +685,126 @@
       ],
       "title": "Clicks by Date",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-azure-data-explorer-datasource",
+        "uid": "${DS_AZURE_DATA EXPLORER DATASOURCE}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "OpenAI": false,
+          "database": "storeDB",
+          "datasource": {
+            "type": "grafana-azure-data-explorer-datasource",
+            "uid": "${DS_AZURE_DATA EXPLORER DATASOURCE}"
+          },
+          "expression": {
+            "from": {
+              "property": {
+                "name": "bronzeOrders",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "groupBy": {
+              "expressions": [],
+              "type": "and"
+            },
+            "reduce": {
+              "expressions": [],
+              "type": "and"
+            },
+            "where": {
+              "expressions": [],
+              "type": "and"
+            }
+          },
+          "pluginVersion": "4.7.0",
+          "query": "impressions\n| where $__timeFilter(impressionDate)\n| summarize load_time_max = max(page_loading_seconds) by bin(impressionDate, 1d)",
+          "querySource": "raw",
+          "queryType": "KQL",
+          "rawMode": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Page Max load time",
+      "type": "timeseries"
     }
   ],
-  "refresh": false,
+  "refresh": "",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [],
@@ -514,6 +819,6 @@
   "timezone": "",
   "title": "ADX analytics",
   "uid": "eafddf7a-a3db-4951-ba08-287ddcf06871",
-  "version": 6,
+  "version": 7,
   "weekStart": ""
 }
