@@ -323,7 +323,7 @@ resource grafanaViewer 'Microsoft.Kusto/clusters/principalAssignments@2022-02-01
     managedGrafana
   ]
   properties: {
-    principalId: dataFactory.identity.principalId
+    principalId: managedGrafana.identity.principalId
     principalType: 'App'
     role: 'AllDatabasesViewer'
     tenantId: subscription().tenantId
