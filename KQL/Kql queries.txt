@@ -16,25 +16,55 @@ clicks
 | summarize TotalEvents = count(), StartDate = min(clickDate), EndDate = max(clickDate)
 | extend Freshness = now() - EndDate
 
-// ===================AGGREGATIONS
+// ===================AGGREGATIONS FOR DASHBOARDS
 
 clicks
-| summarize product_count= count() by productId
-| render columnchart 
-| top 30 by product_count
-
-clicks
-| summarize product_count = count() by productId
+| where clickDate between (_startTime.._endTime)
+| join external_table('products') on $left.productId == $right.ProductID
+| summarize product_count = count() by Name
 | render  piechart 
 | top 30 by product_count
 
+impressions
+| where impressionDate  between (_startTime.._endTime)
+| join external_table('products') on $left.productId == $right.ProductID
+| project lon = geo_info_from_ip_address(ip_address).longitude, lat = geo_info_from_ip_address(ip_address).latitude, Name
+| render scatterchart with (kind = map)
+
+clicks
+| where clickDate between (_startTime.._endTime)
+| summarize date_count = count() by bin(clickDate, 1d)
+| render timechart 
+| top 30 by date_count
+
+
+let imp = 
+impressions
+| where impressionDate  between (_startTime.._endTime)
+| extend dateOnly = substring(todatetime(impressionDate).tostring(), 0, 10)
+| summarize imp_count = count() by dateOnly;
+let clck = 
+clicks
+| where clickDate  between (_startTime.._endTime)
+| extend dateOnly = substring(todatetime(clickDate).tostring(), 0, 10)
+| summarize clck_count = count() by dateOnly;
+imp 
+| join clck on $left.dateOnly == $right.dateOnly
+| project selected_date = dateOnly , impressions = imp_count , clicks = clck_count, CTR = clck_count * 100 / imp_count
+
+
+// ==================OTHER QUERIES
 
 clicks
 | summarize date_count = count() by bin(clickDate, 1d)
 | render timechart 
 | top 30 by date_count
 
-print ip_location=geo_info_from_ip_address('20.53.203.50')
+clicks
+| summarize date_count = count() by bin(clickDate, 1d)
+| render timechart 
+| top 30 by date_count
+
 
 impressions
 | take 1000
@@ -84,22 +114,8 @@ imp
 | render columnchart  by dateOnly
 
 
-// ctr overall
-let imp = 
-impressions
-| extend dateOnly = substring(todatetime(impressionDate).tostring(), 0, 10)
-| summarize imp_count = count() by dateOnly;
-let clck = 
-clicks
-| extend dateOnly = substring(todatetime(clickDate).tostring(), 0, 10)
-| summarize clck_count = count() by dateOnly;
-imp 
-| join clck on $left.dateOnly == $right.dateOnly
-| extend ctr = clck_count * 100 / imp_count
-| summarize CTR = avg(ctr)
-| render table 
 
-
+// ==================advanced queries
 impressions
 | make-series count() on impressionDate step 1d by browser, browserVersion
 | extend anomalies = series_decompose_anomalies(count_, 4)

@@ -6,6 +6,7 @@ productIds = [707,708,711,712,714,715,716,717,718,722,738,739,742,743,747,748,77
 def generateClickEvent(impressionEvent):
     faker = Faker()
     click = {}
+    click["clickId"] = faker.uuid4()
     click["impressionId"] = impressionEvent["impressionId"]
     click["clickDate"] = impressionEvent["impressionDate"]
     click["productId"] = impressionEvent["productId"]

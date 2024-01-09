@@ -1,5 +1,5 @@
 # Connect-AzAccount
-$SubscriptionId = 'ec967cb5-f2b0-43c2-9ba2-4a2eb94bbacc'
+$SubscriptionId = '<subscriptionId>'
 $resourceGroupName = "adxanalytics-rg"
 $location = "westeurope"
 

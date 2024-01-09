@@ -50,7 +50,7 @@ policy update @'[{"Source": "bronzeOrders", "Query": "ParseOrders", "IsEnabled" 
 .create table productRecommendations ingestion json mapping 'productRecommendations_jsonmapping' '[{"column":"productId1", "Properties":{"Path":"$[\'productId1\']"}},{"column":"productId2", "Properties":{"Path":"$[\'productId2\']"}},{"column":"jaccard_similarity", "Properties":{"Path":"$[\'jaccard_similarity\']"}}]'
 
 //change batching policy time to 10 seconds to reflect ingestion changes faster
-.alter tables (clicks, impressions, impressionsToOrders, productRecommendations) policy ingestionbatching
+.alter tables (clicks, impressions, impressionsToOrders, productRecommendations, bronzeOrders, orders) policy ingestionbatching
 ```
 {
     "MaximumBatchingTimeSpan" : "00:00:10",
