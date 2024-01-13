@@ -1,6 +1,7 @@
 # Connect-AzAccount
-$SubscriptionId = '<subscriptionId>'
-$resourceGroupName = "adxanalytics-rg"
+# Subscription id of the current subscription
+$subscriptionId=$(az account show --query id --output tsv)
+$resourceGroupName = "adxanalytics1-rg"
 $location = "westeurope"
 
 
