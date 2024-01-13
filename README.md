@@ -40,7 +40,7 @@ You will learn how to:
 * VsCode
 
 # Building the infrastructure
-## Before running the scripts - add subscription and user Ids
+## IMPORTANT!!!!! - Before running the scripts - CHANGE PREFIX and user Id
 * Add your user Id in the [deployAll.bicep](<infrastructure scripts/deployAll.bicep>) file here to be the Grafana admin:
 <blockquote>
 @description('Specifies the object id of an Azure Active Directory user granted the Grafana Admin role')  
@@ -97,7 +97,7 @@ The "products" table in Kusto is actually the Product table in our SQL server DB
 <br />
 <br />
   
-***  EXERCISE - RUN THIS CODE ***  
+***  EXERCISE - RUN THIS QUERIES IN AZURE DATA EXPLORER WEB UI***  
 
 <code style="color : orange">
 .create external table ...
