@@ -60,7 +60,7 @@ policy update @'[{"Source": "bronzeOrders", "Query": "ParseOrders", "IsEnabled" 
 ```
 
 // use materialized views to view the latest changes in the orders table
-.create materialized-view ordersLatest on table orders
+.create async materialized-view with (backfill=true) ordersLatest on table orders
 {
     orders
     | summarize arg_max(ModifiedDate, *) by SalesOrderDetailID
