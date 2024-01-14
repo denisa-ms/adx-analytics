@@ -41,21 +41,22 @@ You will learn how to:
 
 # Building the infrastructure
 ## IMPORTANT!!!!! - Before running the scripts
-* Change prefix to be unique in the [deployAll.bicep](<infrastructure scripts/deployAll.bicep>) file
+* Change prefix to be unique in the [deployAll.bicep](<infrastructure scripts/deployAll.bicep>) file  
+<code  style="color : orange">
 param prefix string = 'adxanalytics'
-
-* Add your user Id in the [deployAll.bicep](<infrastructure scripts/deployAll.bicep>) file here to be the Grafana admin:
-<blockquote>
+</code>
+<br />
+* Add your user Id in the [deployAll.bicep](<infrastructure scripts/deployAll.bicep>) file here to be the Grafana admin:  
+<code  style="color : orange">
 @description('Specifies the object id of an Azure Active Directory user granted the Grafana Admin role')  
-
 param userId string = '<grafana-admin-user-object-id>'
-</blockquote>
-
-* Option 1: You can get your userID  by running the following command from the cloud shell in the Azure Portal
-<blockquote>
+</code>
+<br />
+* Option 1: You can get your userID  by running the following command from the cloud shell in the Azure Portal  
+<code  style="color : red">
 az ad signed-in-user show --query id -o tsv
-</blockquote>
-
+</code>
+<br />
 * Option 2:  by going in the Azure Portal to:  
 Microsoft entra > Users
 Search for your user and get the user Id as follows:  
@@ -108,11 +109,11 @@ EVENT_HUB_CONN_STRING = "<event hub connection string>"
 ### Open Azure Data Studio and connect to our SQL DB
 ![Alt text](images/sql1.png)  
 
-<span style="color:red">
+<span style="color:aqua">
 NOTE: since we are using SQL serverless, this step is used to "awake" our SQL server
 </span>
 
-### Open Azure Data Factory to run the Change Data Capture (CDC)
+### Open Azure Data Factory to run the Change Data Capture
 In this step we "stream" all the orders from the "SalesOrderDetail" table in SQL to Kusto
 - Go to the Azure Data Factory in the Created Resource Group
 - Launch the ADF Studio
@@ -129,10 +130,56 @@ In this step we "stream" all the orders from the "SalesOrderDetail" table in SQL
 
 ### Generate updates on the SQL SalesOrderDetail table
 - If you did not create a python virtual environment yet, Follow the instructions in the [README file](notebooks/README.md) located in the [notebooks](notebooks) folder for creating a python virtual environment
-- Run [Generate orders updates](<notebooks/Generate orders updates.ipynb>)
+- Run [Generate orders updates notebook](<notebooks/Generate orders updates.ipynb>)
+- Run the CDC pipeline in Azure Data Factory to send the changes from SQL to Kusto (see [Open Azure Data Factory to run the Change Data Capture (CDC)](#open-azure-data-factory-to-run-the-change-data-capture) above
 
+  
+# EXERCISE 1 - Read data in Kusto
+Your Kusto DB should look like this:  
+![Alt text](images/kql1.png)
+<br />
 
-# Joining with External tables
+- Copy all KQL queries to the Azure Data Explorer Web UI and run queries one by one
+[Exercise 1 - KQL queries](KQL/exercise1.kql)
+<br />
+![Alt text](images/kql2.png)
+<br />
+
+# EXERCISE 2 - Data visualization
+- Visualization in Azure Data Explorer web UI
+IMPORTANT!! - 
+<br />
+if you changed the "prefix" param in the [deployAll.bicep](<infrastructure scripts/deployAll.bicep>) file
+<br />
+You have to edit the JSON defining the ADX WEB UI Dashboard data source as follows:  
+
+<code  style="color : orange">
+    "dataSources": [
+      {
+        "id": "535ee10e-e104-4df6-a3eb-ac5cd7834691",
+        "name": "storeDB",
+        "scopeId": "kusto",
+        "clusterUri": "https://prefix-kusto.westeurope.kusto.windows.net/",
+        "database": "storeDB",
+        "kind": "manual-kusto"
+      }
+    ],
+</code>
+<br />
+
+![Alt text](images/dashboard1.png)
+![Alt text](images/dashboard2.png)
+<br />
+- Visualization in PowerBI  
+
+<br />
+- Visualization and alerts in Grafana
+<br />
+# EXERCISE 3 - ML in Kusto
+- ML in Azure Data Explorer
+
+# Additional Information
+### Joining with External tables
 [Azure Data Explorer External tables](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/schema-entities/external-tables)  
 An external table is a schema entity that references data stored external to a Kusto database in your cluster.
 
@@ -140,27 +187,12 @@ In this workshop we created an external table in Kusto.
 
 The "products" table in Kusto is actually the Product table in our SQL server DB, which we created in the [KQL script](<infrastructure scripts/script.kql>)   we run after creating the Kusto cluster
 
-<code style="color : white">
+<code style="color : red">
 .create external table ...
 </code>
 <br />
 <br />
-  
-# EXERCISE 1 - Read data in Kusto
-- Read from the "Products" external table
-- Read from the "orders" table being populated using CDC with Azure Data Factory
-- Understand Kusto materialized views
-- Read from the "impressions" and "clicks" tables ingested from Azure Event Hub
 
-# EXERCISE 2 - Data visualization
-- Visualization in Azure Data Explorer web UI
-- Visualization in PowerBI
-- Visualization and alerts in Grafana
-
-# EXERCISE 3 - ML in Kusto
-- ML in Azure Data Explorer
-
-# Additional Information
 ### Monitoring 
 Setup diagnostic logs  
 https://learn.microsoft.com/en-us/azure/data-explorer/using-diagnostic-logs?tabs=ingestion

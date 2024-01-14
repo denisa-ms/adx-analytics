@@ -1,0 +1,43 @@
+// Read from the "Products" external table - data is located in our SQL server
+external_table("products")
+| take 10
+
+
+// Read from the "orders" table being populated using CDC with Azure Data Factory
+bronzeOrders
+| take 10 
+
+// We are using Kusto update policy feature to transform the data while being ingested 
+// Check the "ParseOrders" function
+// We are adding calculated columns called "UnitPriceDiscount" and "PurchaseDate"
+orders
+| take 10
+
+// Understand Kusto materialized views
+// While using CDC (Change data capture) we can update orders - that will result in an additional row in the orders table in Kusto
+// In order to always show the latest items, we can leverage Kusto materialized views
+
+// 2 records - one for every change
+bronzeOrders
+| where SalesOrderDetailID == "110562"
+
+// 1 record with the latest change
+ordersLatest
+| where SalesOrderDetailID == "110562"
+
+// Read from the "impressions" and "clicks" tables ingested from Azure Event Hub
+impressions
+| take 10
+
+clicks
+| take 10
+
+//join the facts and dimensions
+ordersLatest
+| join kind=inner external_table('products') on $left.ProductID == $right.ProductID
+| summarize DailySales = sum(LineTotal) by PurchaseDate, ProductID, Name
+
+//join the facts and dimensions
+clicks
+| join kind=inner external_table('products') on $left.productId == $right.ProductID
+| summarize DailyClicks = count() by clickDate, ProductID, Name
