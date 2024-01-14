@@ -40,7 +40,10 @@ You will learn how to:
 * VsCode
 
 # Building the infrastructure
-## IMPORTANT!!!!! - Before running the scripts - CHANGE PREFIX and user Id
+## IMPORTANT!!!!! - Before running the scripts
+* Change prefix to be unique in the [deployAll.bicep](<infrastructure scripts/deployAll.bicep>) file
+param prefix string = 'adxanalytics'
+
 * Add your user Id in the [deployAll.bicep](<infrastructure scripts/deployAll.bicep>) file here to be the Grafana admin:
 <blockquote>
 @description('Specifies the object id of an Azure Active Directory user granted the Grafana Admin role')  
@@ -82,9 +85,55 @@ NOTE: This takes time so be patient !!
 ![Deployed resources](images/deployed_resources.png)
 
 
+# Post deployment 
+### Define the event hub SAS (shared access policy) in [env](.env) file
+- Go to the Event hub -> Shared access policies 
+- Add
+- Create a Policy called "adxdemo" with "Manage" privileges
+- Save and copy the "Connection string–primary key"
+- Paste into [env](.env) file the event hub connection string  
+
+<code  style="color : orange">
+EVENT_HUB_CONN_STRING = "<event hub connection string>"   
+</code>
+
+<br />
+
+![event hub](images/eventhub1.png)
+![sas](images/eventhub2.png)
+![createsas](images/eventhub3.png)
+
+<br />
+
+### Open Azure Data Studio and connect to our SQL DB
+![Alt text](images/sql1.png)  
+
+<span style="color:red">
+NOTE: since we are using SQL serverless, this step is used to "awake" our SQL server
+</span>
+
+### Open Azure Data Factory to run the Change Data Capture (CDC)
+In this step we "stream" all the orders from the "SalesOrderDetail" table in SQL to Kusto
+- Go to the Azure Data Factory in the Created Resource Group
+- Launch the ADF Studio
+- Author -> Pipelines -> "SQLToADX_orders"
+- Click on "debug"
+
+![Alt text](images/adf1.png)
+![Alt text](images/adf3.png)
+![Alt text](images/adf4.png)
+
+### Create synthetic events by running a Notebook
+- Follow the instructions in the [README file](notebooks/README.md) located in the [notebooks](notebooks) folder for creating a python virtual environment
+- Run [Generate Synthetic events notebook](<notebooks/Generate synthetic events .ipynb>)
+
+### Generate updates on the SQL SalesOrderDetail table
+- If you did not create a python virtual environment yet, Follow the instructions in the [README file](notebooks/README.md) located in the [notebooks](notebooks) folder for creating a python virtual environment
+- Run [Generate orders updates](<notebooks/Generate orders updates.ipynb>)
+
 
 # Joining with External tables
-[Azure Data Explorer External tables](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/schema-entities/external-tables)
+[Azure Data Explorer External tables](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/schema-entities/external-tables)  
 An external table is a schema entity that references data stored external to a Kusto database in your cluster.
 
 In this workshop we created an external table in Kusto.
@@ -97,23 +146,22 @@ The "products" table in Kusto is actually the Product table in our SQL server DB
 <br />
 <br />
   
-***  EXERCISE - RUN THIS QUERIES IN AZURE DATA EXPLORER WEB UI***  
+# EXERCISE 1 - Read data in Kusto
+- Read from the "Products" external table
+- Read from the "orders" table being populated using CDC with Azure Data Factory
+- Understand Kusto materialized views
+- Read from the "impressions" and "clicks" tables ingested from Azure Event Hub
 
-<code style="color : orange">
-.create external table ...
-</code>
+# EXERCISE 2 - Data visualization
+- Visualization in Azure Data Explorer web UI
+- Visualization in PowerBI
+- Visualization and alerts in Grafana
 
+# EXERCISE 3 - ML in Kusto
+- ML in Azure Data Explorer
 
-# Ingesting events into Azure Data Explorer from Event hub
-# CDC using Azure Data Factory
-# Create synthetic events with orders
-# Visualization in Azure Data Explorer web UI
-# Visualization in PowerBI
-# Visualization and alerts in Grafana
-# Materialized views
-# ML in Azure Data Explorer
-
-# Monitoring 
+# Additional Information
+### Monitoring 
 Setup diagnostic logs  
 https://learn.microsoft.com/en-us/azure/data-explorer/using-diagnostic-logs?tabs=ingestion
 
@@ -121,17 +169,15 @@ Create an Azure alert on FailedIngestion table
 https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/tutorial-log-alert
 
 
-# Additional Information
+### Connecting to Kusto using authentication  
+[How to configure an app registration to connect to Azure Data Explorer](https://learn.microsoft.com/en-us/azure/data-explorer/provision-entra-id-app)  
+
+Add AAD user from another tenant to access from PBI to ADX   
+.add database ['storeDB'] admins ("aaduser=user@microsoft.com;your aad tenant id here")  
+
+Add AAD app to ADX as admin + run the following command inside ADX    
+.add database ['your db name'] users ('aadapp=your app-id') 'Demo app put your comment here (AAD)'   
 
 
-
-[How to configure an app registration to connect to Azure Data Explorer](https://learn.microsoft.com/en-us/azure/data-explorer/provision-entra-id-app)
-
-
-Add AAD user from another tenant to access from PBI to ADX  
-.add database ['storeDB'] admins ("aaduser=user@microsoft.com;your aad tenant id here")
-
-Add AAD app to ADX as admin + run the following command inside ADX   
-.add database ['your db name'] users ('aadapp=your app-id') 'Demo app put your comment here (AAD)'
-
-[Jaccard Similarity](https://www.geeksforgeeks.org/how-to-calculate-jaccard-similarity-in-python/)
+### Jaccard Similarity  
+[Jaccard Similarity](https://www.geeksforgeeks.org/how-to-calculate-jaccard-similarity-in-python/)  
