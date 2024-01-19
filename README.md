@@ -145,8 +145,7 @@ Your Kusto DB should look like this:
 ![Alt text](images/kql2.png)
 <br />
 
-# EXERCISE 2 - Data visualization
-- Visualization in Azure Data Explorer web UI
+# EXERCISE 2 - Data visualization in Azure Data Explorer web UI
 IMPORTANT!! - 
 <br />
 if you changed the "prefix" param in the [deployAll.bicep](<infrastructure scripts/deployAll.bicep>) file
@@ -170,13 +169,26 @@ You have to edit the JSON defining the ADX WEB UI Dashboard data source as follo
 ![Alt text](images/dashboard1.png)
 ![Alt text](images/dashboard2.png)
 <br />
-- Visualization in PowerBI  
+
+# EXERCISE 3 - Visualization in PowerBI  
 
 <br />
-- Visualization and alerts in Grafana
+
+# EXERCISE 4 - Visualization and alerts in Grafana
 <br />
-# EXERCISE 3 - ML in Kusto
-- ML in Azure Data Explorer
+
+![Open grafana](images/grafana1.png)
+![Open grafana](images/grafana5.png)
+![Open grafana](images/grafana6.png)
+![Open grafana](images/grafana7.png)
+![Open grafana](images/grafana8.png)
+![Open grafana](images/grafana9.png)
+![Open grafana](images/grafana2.png)
+![Open grafana](images/grafana3.png)
+![Open grafana](images/grafana4.png)
+![Open grafana](images/grafana10.png)
+
+
 
 # Additional Information
 ### Joining with External tables
