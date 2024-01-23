@@ -1,5 +1,5 @@
 ---
-published: false                        # Optional. Set to true to publish the workshop (default: false)
+published: true                        # Optional. Set to true to publish the workshop (default: false)
 type: workshop                          # Required.
 title: Building an Analytics Platform with Azure Data Explorer              # Required. Full title of the workshop
 short_title: ADX - Analytics     # Optional. Short title displayed in the header
@@ -10,7 +10,7 @@ authors:                                # Required. You can add as many authors 
 contacts:                               # Required. Must match the number of authors
   - https://github.com/denisa-ms
   - https://www.linkedin.com/in/deniseschlesinger/
-duration_minutes: 20                    # Required. Estimated duration in minutes
+duration_minutes: 180                    # Required. Estimated duration in minutes
 tags: azure, data, analytics, Kusto, bicep          # Required. Tags for filtering and searching
 #banner_url: assets/banner.jpg           # Optional. Should be a 1280x640px image
 #video_url: https://youtube.com/link     # Optional. Link to a video of the workshop
