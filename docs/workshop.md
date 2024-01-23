@@ -33,9 +33,12 @@ You will learn how to:
 * Build Data pipelines using Azure Data Factory for CDC (change data capture)
 * Stream events into Azure Event hubs and ingest them into Azure Data Explorer
 * Create data transformations in Azure Data Explorer 
-* Use Notebooks to create product recommendations
-* Create reports & Visualize the data using Power BI
+* Create reports & Visualize the data using Azure Data explorer dashboards
 * Create reports and Alerts connecting Grafana to Azure Data Explorer
+
+
+At the end of this tutorial you will have created the following entities:
+![Deployed resources](assets/deployed_resources.png)
 
 ---
 
@@ -45,14 +48,37 @@ You will learn how to:
 
 ---
 
-# Pre-requisites
-* An Azure Account where you have admin permissions
-* Python 3.7 running locally in your machine
-* VsCode
+# MRD
+
+![MRD](assets/mrd.png)
+
+We are showcasing many of Azure Data Explorer capabiities.
+* products table: external table hosted in our operational SQL DB. An external table is a schema entity that references data stored external to a Kusto database in your cluster.
+* clicks and impressions tables: are ingested from Azure Event Hub
+* bronzeOrders: feed by Azure Data Factory using CDC (change data capture)
+* orders: created on ingestion based on Kusto's update policies feature, that allows appending rows to a target table by applying transformations to a source table.
+* ordersLatest: materialized view - exposes an aggregation over a table or other materialized view
+
+## For more information
+
+[External tables](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/schema-entities/external-tables)  
+[Update policies](<https://learn.microsoft.com/en-us/azure/data-explorer/kusto/management/update-policy>)  
+[Materialized views](<https://learn.microsoft.com/en-us/azure/data-explorer/kusto/management/materialized-views/materialized-view-overview>)  
+[Continuous Data Ingestion](<https://learn.microsoft.com/en-us/azure/data-explorer/ingest-data-overview#continuous-data-ingestion>)  
+
+You can review all the commands used to create external tables, update policies, materialized views and mappings for ingestion in the [KQL script](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts/script.kql>) file. 
+This is the script we run in the deployment after creating the Kusto cluster.
 
 ---
 
-# Variable setting before running the scripts
+# Pre-requisites
+* An [Azure Subscription](<https://azure.microsoft.com/en-us/free/>) where you have admin permissions
+* [Python 3.7+](<https://www.python.org/>) running locally in your machine
+* [Visual Studio Code](<https://code.visualstudio.com/>)
+
+---
+
+# Variables setting before running the scripts
 <div class="task" data-title="IMPORTANT - before running the scripts">
 
 > * Change prefix to be unique in the [deployAll.bicep](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts/deployAll.bicep>) file  
@@ -94,14 +120,12 @@ Run powershell scripts in the Azure portal Cloudshell
 ![Alt text](assets/deploy3.png)
 ![Alt text](assets/deploy4.png)
 
-## Created resources
-### The script above creates the following entities
-![Deployed resources](assets/deployed_resources.png)
+
 
 ---
 
 # Post deployment tasks
-## Define the event hub SAS (shared access policy) in [env](.env) file
+## Define the event hub SAS (shared access policy) in [.env](https://github.com/denisa-ms/ADX-Analytics/blob/main/.env.template) file
 
 <div class="task" data-title="Task">
 
@@ -167,8 +191,8 @@ Your Kusto DB should look like this:
 ![Alt text](assets/kql1.png)
 <br />
 
-- Copy all KQL queries to the Azure Data Explorer Web UI and run queries one by one
-[KQL queries](https://github.com/denisa-ms/ADX-Analytics/blob/main/KQL/exercise1.kql)
+- Copy all KQL queries from the [exercise1.kql](https://github.com/denisa-ms/ADX-Analytics/blob/main/KQL/exercise1.kql) file to the Azure Data Explorer Web UI and run queries one by one.
+
 <br />
 
 ![Alt text](assets/kql2.png)
@@ -176,7 +200,7 @@ Your Kusto DB should look like this:
 
 ---
 
-# Data visualization in Azure Data Explorer web UI
+# Visualization in Azure Data Explorer web UI
 <div class="task" data-title="Important">
 
 > If you changed the "prefix" param in the [deployAll.bicep](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts/deployAll.bicep>) file  
@@ -197,6 +221,7 @@ Your Kusto DB should look like this:
 <br />
 </div> 
 
+Import the dashboard as follows:
 ![Alt text](assets/dashboard1.png)
 ![Alt text](assets/dashboard2.png)
 <br />
@@ -204,7 +229,7 @@ Your Kusto DB should look like this:
 ---
 
 # Visualization and alerts in Grafana
-<br />
+Import the dashboard into Grafana as follows:
 
 ![Open grafana](assets/grafana1.png)
 ![Open grafana](assets/grafana5.png)
@@ -224,38 +249,24 @@ After creating the dashboards you can define alerts by following this tutorial
 ---
 
 # Additional Information
-## Joining with External tables
-[Azure Data Explorer External tables](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/schema-entities/external-tables)  
-An external table is a schema entity that references data stored external to a Kusto database in your cluster.
-
-In this workshop we created an external table in Kusto.
-
-The "products" table in Kusto is actually the Product table in our SQL server DB, which we created in the [KQL script](<infrastructure scripts/script.kql>)   we run after creating the Kusto cluster
-
-<code style="color : red">
-.create external table ...
-</code>
-<br />
-<br />
 
 ## Monitoring 
-Setup diagnostic logs  
-https://learn.microsoft.com/en-us/azure/data-explorer/using-diagnostic-logs?tabs=ingestion
+ Azure Monitor diagnostic logs provide data about the operation of Azure resources.  
+ Azure Data Explorer uses diagnostic logs for insights on ingestion, commands, query, and tables.  
+ You can export operation logs to Azure Storage, event hub, or Log Analytics to monitor ingestion, commands, and query status.  
+ Logs from Azure Storage and Azure Event Hubs can be routed to a table in your Azure Data Explorer cluster for further analysis.
 
-Create an Azure alert on FailedIngestion table   
-https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/tutorial-log-alert
+[Setup diagnostic logs](<https://learn.microsoft.com/en-us/azure/data-explorer/using-diagnostic-logs?tabs=ingestion>)  
+[Create an Azure alert on FailedIngestion table](<https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/tutorial-log-alert>)
 
 
-## Connecting to Kusto using authentication  
+## Connecting to Azure Data Explorer  
 [How to configure an app registration to connect to Azure Data Explorer](https://learn.microsoft.com/en-us/azure/data-explorer/provision-entra-id-app)  
 
-Add AAD user from another tenant to access from PBI to ADX   
-.add database ['storeDB'] admins ("aaduser=user@microsoft.com;your aad tenant id here")  
+* Adding an AAD user from another tenant to access from PBI to ADX   
+.add database ['storeDB'] admins ("aaduser=user@yourdomain.com;your aad tenant id here")  
 
-Add AAD app to ADX as admin + run the following command inside ADX    
+* Adding an AAD app to ADX as admin + run the following command inside ADX    
 .add database ['your db name'] users ('aadapp=your app-id') 'Demo app put your comment here (AAD)'   
 
-
-## Jaccard Similarity  
-[Jaccard Similarity](https://www.geeksforgeeks.org/how-to-calculate-jaccard-similarity-in-python/)  
 
