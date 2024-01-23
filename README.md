@@ -2,4 +2,5 @@
 Created by: [Denise Schlesinger](https://www.linkedin.com/in/deniseschlesinger/)
 
 For the tutorial go to:
-TBD
+[Tutorial](docs/workshop.md)
+[Readme file](docs/workshop.md)
