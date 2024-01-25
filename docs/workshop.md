@@ -37,15 +37,18 @@ You will learn how to:
 * Create reports and Alerts connecting Grafana to Azure Data Explorer
 
 
-At the end of this tutorial you will have created the following entities:
+
+At the end of this tutorial you will have created the following entities:  
 ![Deployed resources](assets/deployed_resources.png)
 
-All the code in this tutorial can be found here:  
+All the code in this tutorial can be found here:   
 [ADX Analytics github repo](<https://github.com/denisa-ms/adx-analytics/tree/main>)  
+
 
 <div class="note" data-title="Azure ML">
 Azure ML notebooks are coming soon.  
 </div>
+
 ---
 
 # Architecture
