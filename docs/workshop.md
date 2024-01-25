@@ -47,7 +47,7 @@ All the code in this tutorial can be found here:
 
 <div class="info" data-title="Note">  
 
-Azure ML notebooks are coming soon.  
+> Azure ML notebooks are coming soon.  
 
 </div>
 
