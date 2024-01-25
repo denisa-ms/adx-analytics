@@ -45,7 +45,7 @@ All the code in this tutorial can be found here:
 [ADX Analytics github repo](<https://github.com/denisa-ms/adx-analytics/tree/main>)  
 
 
-<div class="note" data-title="Azure ML">
+<div class="info" data-title="Note">
 Azure ML notebooks are coming soon.  
 </div>
 
