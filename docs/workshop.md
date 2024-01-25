@@ -48,23 +48,24 @@ At the end of this tutorial you will have created the following entities:
 
 ---
 
-# MRD
+# Azure Data Explorer features
 
 ![MRD](assets/mrd.png)
 
-We are showcasing many of Azure Data Explorer capabiities.
-* products table: external table hosted in our operational SQL DB. An external table is a schema entity that references data stored external to a Kusto database in your cluster.
-* clicks and impressions tables: are ingested from Azure Event Hub
-* bronzeOrders: feed by Azure Data Factory using CDC (change data capture)
-* orders: created on ingestion based on Kusto's update policies feature, that allows appending rows to a target table by applying transformations to a source table.
-* ordersLatest: materialized view - exposes an aggregation over a table or other materialized view
-
-## For more information
-
-[External tables](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/schema-entities/external-tables)  
-[Update policies](<https://learn.microsoft.com/en-us/azure/data-explorer/kusto/management/update-policy>)  
-[Materialized views](<https://learn.microsoft.com/en-us/azure/data-explorer/kusto/management/materialized-views/materialized-view-overview>)  
-[Continuous Data Ingestion](<https://learn.microsoft.com/en-us/azure/data-explorer/ingest-data-overview#continuous-data-ingestion>)  
+We are showcasing many of Azure Data Explorer capabilities:
+* [External tables](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/schema-entities/external-tables)   
+  Products table: defined as an external table hosted in our operational SQL DB. 
+  An external table is a schema entity that references data stored external to a Kusto database in your cluster.
+* [Continuous Data Ingestion](<https://learn.microsoft.com/en-us/azure/data-explorer/ingest-data-overview#continuous-data-ingestion>)   
+  Clicks and Impressions tables: are ingested from Azure Event Hub
+* [CDC using Azure Data Factory](<https://learn.microsoft.com/en-us/azure/data-factory/tutorial-incremental-copy-overview>)  
+  BronzeOrders: feed by Azure Data Factory using CDC (change data capture)
+* [Update policies](<https://learn.microsoft.com/en-us/azure/data-explorer/kusto/management/update-policy>)    
+  Orders: created on ingestion based on Kusto's update policies feature, that allows appending rows to a target table by applying transformations to a source table.
+* [Materialized views](<https://learn.microsoft.com/en-us/azure/data-explorer/kusto/management/materialized-views/materialized-view-overview>)  
+  OrdersLatest: materialized view - exposes an aggregation over a table or other materialized view
+ 
+## KQL Commands 
 
 You can review all the commands used to create external tables, update policies, materialized views and mappings for ingestion in the [KQL script](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts/script.kql>) file. 
 This is the script we run in the deployment after creating the Kusto cluster.
@@ -83,7 +84,7 @@ This is the script we run in the deployment after creating the Kusto cluster.
 
 > * Change prefix to be unique in the [deployAll.bicep](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts/deployAll.bicep>) file  
 ```
-   param prefix string = 'adxanalytics'
+   param prefix string = '<change this prefix>'
 ```
 > * Add your user Id in the [deployAll.bicep](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts/deployAll.bicep>) file here to be the Grafana admin:   
 ```

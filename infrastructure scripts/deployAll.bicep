@@ -1,4 +1,4 @@
-param prefix string = 'adxanalytics'
+param prefix string = '<change this prefix>'
 param serverName string = '${prefix}-dbserver'
 param databaseName string = 'aworks'
 param location string = 'westeurope'
