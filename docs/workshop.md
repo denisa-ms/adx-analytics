@@ -249,6 +249,30 @@ After creating the dashboards you can define alerts by following this tutorial
 
 ---
 
+# Visualization in Power BI
+
+## Open the Power BI template provided in this demo to read from Azure Data Explorer
+
+![power BI](assets/pbi6.png)
+![power BI](assets/pbi7.png)
+![power BI](assets/pbi8.png)
+![power BI](assets/pbi9.png)
+![power BI](assets/pbi10.png)
+
+## Create a new Power BI report
+
+![power BI](assets/pbi1.png)
+![power BI](assets/pbi2.png)
+![power BI](assets/pbi3.png)
+![power BI](assets/pbi4.png)
+![power BI](assets/pbi5.png)
+
+For more instructions:
+[Use Azure Data Explorer data in Power BI](<https://learn.microsoft.com/en-us/azure/data-explorer/power-bi-data-connector?tabs=web-ui>)
+
+---
+
+
 # Additional Information
 
 ## Monitoring 
