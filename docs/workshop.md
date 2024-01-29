@@ -112,7 +112,21 @@ This is the script we run in the deployment after creating the Kusto cluster.
     }
    }
 ```
+> * Change the name of the SQL server in the [script.kql](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts/script.kql>) file to match the prefix as follows:  
 
+```
+// connect to operational Database with external table Product
+.create external table products (ProductID: int, ProductNumber: string,  Name: string) 
+kind=sql
+table=[SalesLT.Product]
+( 
+   h@'Server=tcp:<prefix>-dbserver.database.windows.net,1433;Initial Catalog=aworks;User Id=SqlAdmin;Password=ChangeYourAdminPassword1'
+)
+with 
+(
+   createifnotexists = true
+)  
+```
 > * Add your user Id in the [deployAll.bicep](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts/deployAll.bicep>) file here to be the Grafana admin:   
 ```
    param userId string = '<grafana-admin-user-object-id>'
@@ -126,6 +140,9 @@ This is the script we run in the deployment after creating the Kusto cluster.
 > ![UserID](assets/userId.png)
 
 </div>
+
+> * Zip all files in the [infrastructure scripts](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts>) folder into a file called "all.zip"  
+
 
 ---
 
