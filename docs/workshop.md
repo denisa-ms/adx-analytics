@@ -152,8 +152,16 @@ Run powershell scripts in the Azure portal Cloudshell
 1. Go to the azure portal and login with a user that has administrator permissions
 2. Open the cloud shell in the azure portal
 3. Upload the file “all.zip” in the github repo by using the upload file button in the cloud shell
-4. Unzip the file by writing unzip all.zip
-5. Run ./createAll.ps1  
+4. Unzip the file by writing   
+```
+unzip all.zip
+```  
+
+5. Run 
+```
+./createAll.ps1   
+```  
+
 
 <div class="info" data-title="Note">
 
