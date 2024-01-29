@@ -97,6 +97,22 @@ This is the script we run in the deployment after creating the Kusto cluster.
 ```
    param prefix string = '<change this prefix>'
 ```
+> * Change the name of the Azure Data Factory in the [ADF_pipeline2.json](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts/ADF_pipeline2.json>) file to match the prefix as follows:  
+
+```
+   {
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "defaultValue": "<your prefix here>-adf"
+        },
+        ...
+    }
+   }
+```
+
 > * Add your user Id in the [deployAll.bicep](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts/deployAll.bicep>) file here to be the Grafana admin:   
 ```
    param userId string = '<grafana-admin-user-object-id>'
