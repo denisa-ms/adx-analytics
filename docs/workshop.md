@@ -299,9 +299,6 @@ Import the dashboard into Grafana as follows:
 
 <br />
 
-After creating the dashboards you can define alerts by following this tutorial
-
-
 ---
 
 # Visualization in Power BI
