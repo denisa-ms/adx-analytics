@@ -254,7 +254,8 @@ Your Kusto DB should look like this:
 
 ---
 
-# Visualization in Azure Data Explorer web UI
+# Visualization in Azure Data Explorer web UI  
+
 <div class="task" data-title="Important">
 
 > If you changed the "prefix" param in the [deployAll.bicep](<https://github.com/denisa-ms/ADX-Analytics/blob/main/infrastructure%20scripts/deployAll.bicep>) file  
@@ -298,7 +299,8 @@ Import the dashboard into Grafana as follows:
 
 <br />
 
-After creating the dashboards you can define alerts by following this tutorial  
+After creating the dashboards you can define alerts by following this tutorial
+
 
 ---
 
@@ -325,6 +327,29 @@ For more instructions:
 
 ---
 
+# Alerts in Azure Data Explorer
+
+You have 3 options to create alerts on Azure data Explorer:  
+## Azure Logs (Preview)
+
+Azure Monitor Alerts allow you to monitor your Azure and application telemetry to quickly identify issues affecting your service. The Azure Monitor alerts is introducing now support for running queries on Azure Data Explorer (ADX) tables, and even joining data between ADX and data in Log Analytics and Application Insights. 
+As part of this newly added support, log alert rules now support managed identities for Azure resources – allowing you to see and control the exact permissions of your log alert rule. 
+
+To write queries to Log Search Alerts (LSA) you need to use the ADX(‘<cluster url>’) pattern.   
+Learn more:  
+![Alerts in Azure Logs](assets/alerts1.png)
+
+## Power automate
+The Azure Data Explorer connector for Power Automate (previously Microsoft Flow) enables you to orchestrate and schedule flows, send notifications, and alerts, as part of a scheduled or triggered task.  
+For more information: [Azure Data Explorer connector for Microsoft Power Automate](<https://learn.microsoft.com/en-us/azure/data-explorer/flow>)
+
+## Alerts in Grafana  
+Grafana is an analytics platform where you can query and visualize data, and then create and share dashboards based on your visualizations. Grafana provides an Azure Data Explorer plug-in, which enables you to connect to and visualize data from Azure Data Explorer. The plug-in works with both Azure Managed Grafana and self-hosted Grafana.  
+
+For more information: [Create alerts in Grafana](<https://learn.microsoft.com/en-us/azure/data-explorer/grafana?tabs=azure-managed-grafana#create-alerts>)  
+
+
+---
 
 # Additional Information
 
