@@ -17,7 +17,7 @@ with
 .create table [orders] (SalesOrderID:long,SalesOrderDetailID:long,OrderQty:long,ProductID:int,UnitPrice:real,UnitPriceDiscount:real,LineTotal:real,ModifiedDate:datetime, UnitFinalPrice:real, PurchaseDate:datetime)
 
 // use update policies to transform data during Ingestion
-.create function
+.create function ifnotexists 
 with (docstring = 'Ingest raw orders data and calculate the final unit price')
 ParseOrders ()
 {

@@ -34,6 +34,7 @@ You will learn how to:
 * Stream events into Azure Event hubs and ingest them into Azure Data Explorer
 * Create data transformations in Azure Data Explorer 
 * Create reports & Visualize the data using Azure Data explorer dashboards
+* Create reports using Power BI
 * Create reports and Alerts connecting Grafana to Azure Data Explorer
 
 
